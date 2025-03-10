@@ -20,7 +20,7 @@ option(ZMQ_ENABLE_DRAFTS "Build and install draft classes and methods" FALSE)
 option(ZMQ_ENABLE_WS "Enable WebSocket transport" ${ZMQ_ENABLE_DRAFTS})
 option(ZMQ_ENABLE_RADIX_TREE "Use radix tree implementation to manage subscriptions" ${ZMQ_ENABLE_DRAFTS})
 option(ZMQ_WITH_MILITANT "Enable militant assertions" FALSE)
-option(ZMQ_PEDANTIC "Enable pedantic compiler warnings" TRUE)
+option(ZMQ_PEDANTIC "Enable pedantic compiler warnings" FALSE)
 
 if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     message(
@@ -350,6 +350,11 @@ target_compile_definitions(
     ZMQ_CUSTOM_PLATFORM_HPP
 )
 
+if(NOT ${ZMQ_SHARED})
+    # technically only required on Windows
+    target_compile_definitions(libzmq PUBLIC ZMQ_STATIC)
+endif()
+
 if(${ENABLE_DRAFTS})
     target_compile_definitions(libzmq PRIVATE ZMQ_BUILD_DRAFT_API)
 endif()
@@ -628,4 +633,34 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "HP-UX")
     target_compile_definitions(libzmq PRIVATE _POSIX_C_SOURCE=200112L)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     target_compile_definitions(libzmq PRIVATE _DARWIN_C_SOURCE)
+endif()
+
+if(${MSVC})
+    # Suppress linker warnings caused by #ifdef omission of file content.
+    target_link_options(libzmq PRIVATE "/ignore:4221")
+
+    if(${ZMQ_SHARED})
+        # Whole Program Optimization flags. http://msdn.microsoft.com/en-us/magazine/cc301698.aspx
+        #
+        # "Finally, there's the subject of libraries. It's possible to create .LIB
+        # files with code in its IL form. The linker will happily work with these
+        # .LIB files. Be aware that these libraries will be tied to a specific
+        # version of the compiler and linker. If you distribute these libraries,
+        # you'll need to update them if Microsoft changes the format of IL in a
+        # future release."
+        #
+        # /GL and /LTCG can cause problems when libraries built with different
+        # versions of compiler are later linked into an executable while /LTCG is active.
+        # https://social.msdn.microsoft.com/Forums/vstudio/en-US/5c102025-c254-4f02-9a51-c775c6cc9f4b/problem-with-ltcg-when-building-a-static-library-in-vs2005?forum=vcgeneral
+        #
+        # For this reason, enable only when building a "Release" (e.g. non-DEBUG) DLL.
+        if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+            target_compile_options(libzmq PRIVATE /GL /LTCG)
+        endif()
+    endif()
+endif()
+
+if(${ZMQ_SHARED} AND ${WIN32})
+    # export symbols
+    target_compile_definitions(libzmq PRIVATE DLL_EXPORT)
 endif()

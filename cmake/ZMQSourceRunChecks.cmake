@@ -13,7 +13,7 @@ int main(int argc, char *argv [])
     return(s == -1);
 }
 "
-    ZMQ_HAVE_SOCK_CLOEXEC)
+    HAVE_SOCK_CLOEXEC)
 endmacro()
 
 macro(zmq_check_efd_cloexec)
@@ -28,7 +28,7 @@ int main(int argc, char *argv [])
     return(s == -1);
 }
 "
-    ZMQ_HAVE_EVENTFD_CLOEXEC)
+    HAVE_EVENTFD_CLOEXEC)
 endmacro()
 
 macro(zmq_check_o_cloexec)
@@ -45,7 +45,7 @@ int main(int argc, char *argv [])
     return s == -1;
 }
 "
-    ZMQ_HAVE_O_CLOEXEC)
+    HAVE_O_CLOEXEC)
 endmacro()
 
 macro(zmq_check_so_bindtodevice)
@@ -64,7 +64,7 @@ int main(int argc, char *argv [])
 #endif
 }
 "
-    ZMQ_HAVE_SO_BINDTODEVICE)
+    HAVE_SO_BINDTODEVICE)
 endmacro()
 
 # TCP keep-alives Checks.
@@ -85,7 +85,7 @@ int main(int argc, char *argv [])
     );
 }
 "
-    ZMQ_HAVE_SO_KEEPALIVE)
+    HAVE_SO_KEEPALIVE)
 endmacro()
 
 macro(zmq_check_tcp_keepcnt)
@@ -107,7 +107,7 @@ int main(int argc, char *argv [])
     );
 }
 "
-    ZMQ_HAVE_TCP_KEEPCNT)
+    HAVE_TCP_KEEPCNT)
 endmacro()
 
 macro(zmq_check_tcp_keepidle)
@@ -129,7 +129,7 @@ int main(int argc, char *argv [])
     );
 }
 "
-    ZMQ_HAVE_TCP_KEEPIDLE)
+    HAVE_TCP_KEEPIDLE)
 endmacro()
 
 
@@ -153,7 +153,7 @@ int main(int argc, char *argv [])
 }
 
 "
-    ZMQ_HAVE_TCP_KEEPINTVL)
+    HAVE_TCP_KEEPINTVL)
 endmacro()
 
 
@@ -176,7 +176,7 @@ int main(int argc, char *argv [])
     );
 }
 "
-    ZMQ_HAVE_TCP_KEEPALIVE)
+    HAVE_TCP_KEEPALIVE)
 endmacro()
 
 
@@ -204,7 +204,7 @@ int main(int argc, char *argv [])
     tipc_addr(0, 0, 0);
 }
 "
-    ZMQ_HAVE_TIPC)
+    HAVE_TIPC)
 endmacro()
 
 
@@ -222,7 +222,7 @@ int main(int argc, char *argv [])
     return 0;
 }
 "
-    ZMQ_HAVE_PTHREAD_SETNAME_1)
+    HAVE_PTHREAD_SETNAME_1)
   check_c_source_compiles(
     "
 #include <pthread.h>
@@ -233,7 +233,7 @@ int main(int argc, char *argv [])
     return 0;
 }
 "
-    ZMQ_HAVE_PTHREAD_SETNAME_2)
+    HAVE_PTHREAD_SETNAME_2)
   check_c_source_compiles(
     "
 #include <pthread.h>
@@ -244,7 +244,7 @@ int main(int argc, char *argv [])
     return 0;
 }
 "
-    ZMQ_HAVE_PTHREAD_SETNAME_3)
+    HAVE_PTHREAD_SETNAME_3)
   check_c_source_compiles(
     "
 #include <pthread.h>
@@ -255,7 +255,7 @@ int main(int argc, char *argv [])
     return 0;
 }
 "
-    ZMQ_HAVE_PTHREAD_SET_NAME)
+    HAVE_PTHREAD_SET_NAME)
   set(CMAKE_REQUIRED_FLAGS ${SAVE_CMAKE_REQUIRED_FLAGS})
 endmacro()
 
@@ -274,7 +274,7 @@ int main(int argc, char *argv [])
     return 0;
 }
 "
-    ZMQ_HAVE_PTHREAD_SET_AFFINITY)
+    HAVE_PTHREAD_SET_AFFINITY)
   set(CMAKE_REQUIRED_FLAGS ${SAVE_CMAKE_REQUIRED_FLAGS})
 endmacro()
 
@@ -292,7 +292,7 @@ int main (int argc, char *argv [])
     return rc == -1 ? 1 : 0;
 }
 "
-    ZMQ_HAVE_GETRANDOM)
+    HAVE_GETRANDOM)
 endmacro()
 
 macro(zmq_check_noexcept)
@@ -310,7 +310,7 @@ int main(int argc, char *argv [])
     return 0;
 }
 "
-    ZMQ_HAVE_NOEXCEPT)
+    HAVE_NOEXCEPT)
 endmacro()
 
 macro(zmq_check_so_priority)
@@ -329,5 +329,5 @@ int main (int argc, char *argv [])
     );
 }
 "
-    ZMQ_HAVE_SO_PRIORITY)
+    HAVE_SO_PRIORITY)
 endmacro()

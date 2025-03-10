@@ -355,7 +355,7 @@ if(NOT ${ZMQ_SHARED})
     target_compile_definitions(libzmq PUBLIC ZMQ_STATIC)
 endif()
 
-if(${ENABLE_DRAFTS})
+if(${ZMQ_ENABLE_DRAFTS})
     target_compile_definitions(libzmq PRIVATE ZMQ_BUILD_DRAFT_API)
 endif()
 

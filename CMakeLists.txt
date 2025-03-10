@@ -356,7 +356,7 @@ if(NOT ${ZMQ_SHARED})
 endif()
 
 if(${ZMQ_ENABLE_DRAFTS})
-    target_compile_definitions(libzmq PRIVATE ZMQ_BUILD_DRAFT_API)
+    target_compile_definitions(libzmq PUBLIC ZMQ_BUILD_DRAFT_API)
 endif()
 
 if(${ZMQ_ENABLE_WS})

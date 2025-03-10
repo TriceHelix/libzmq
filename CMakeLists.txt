@@ -360,7 +360,17 @@ if(${ZMQ_ENABLE_DRAFTS})
 endif()
 
 if(${ZMQ_ENABLE_WS})
-    target_compile_definitions(libzmq PRIVATE ZMQ_HAVE_WS)
+    target_sources(
+        libzmq PRIVATE
+        "${PROJECT_SOURCE_DIR}/external/sha1/sha1.c"
+        "${PROJECT_SOURCE_DIR}/external/sha1/sha1.h"
+    )
+
+    target_compile_definitions(
+        libzmq PRIVATE
+        ZMQ_HAVE_WS
+        ZMQ_USE_BUILTIN_SHA1
+    )
 endif()
 
 if(${ZMQ_ENABLE_RADIX_TREE})

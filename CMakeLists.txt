@@ -21,6 +21,7 @@ option(ZMQ_ENABLE_WS "Enable WebSocket transport" ${ZMQ_ENABLE_DRAFTS})
 option(ZMQ_ENABLE_RADIX_TREE "Use radix tree implementation to manage subscriptions" ${ZMQ_ENABLE_DRAFTS})
 option(ZMQ_WITH_MILITANT "Enable militant assertions" FALSE)
 option(ZMQ_PEDANTIC "Enable pedantic compiler warnings" FALSE)
+option(ZMQ_BUILD_TESTS "Build unit tests." FALSE)
 
 if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     message(
@@ -268,9 +269,6 @@ set(
     "tcp_listener.hpp"
     "thread.hpp"
     "timers.hpp"
-    "tipc_address.hpp"
-    "tipc_connecter.hpp"
-    "tipc_listener.hpp"
     "trie.hpp"
     "udp_address.hpp"
     "udp_engine.hpp"
@@ -340,6 +338,9 @@ set_target_properties(
     CXX_STANDARD 11
     C_STANDARD_REQUIRED TRUE
     CXX_STANDARD_REQUIRED TRUE
+    RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}"
+    LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}"
+    PDB_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}"
 )
 
 target_compile_definitions(
@@ -381,12 +382,17 @@ if(${ZMQ_WITH_MILITANT})
     target_compile_definitions(libzmq PRIVATE ZMQ_ACT_MILITANT)
 endif()
 
+set(HAVE_IPC FALSE)
 if(${WIN32})
     set(POLLER "epoll")
 
     target_compile_definitions(
-        libzmq PRIVATE
+        libzmq PUBLIC
         ZMQ_HAVE_WINDOWS
+    )
+
+    target_compile_definitions(
+        libzmq PRIVATE
         _WIN32_WINNT=0x0A00 # require Windows 10
         FD_SETSIZE=16384 # max sockets
         _CRT_SECURE_NO_WARNINGS
@@ -539,10 +545,8 @@ if(NOT ${MSVC})
 endif()
 
 if(${WIN32})
-    set(HAVE_WS2_32 TRUE)
-    set(HAVE_RPCRT4 TRUE)
-    set(HAVE_IPHLAPI TRUE)
     set(HAVE_IF_NAMETOINDEX TRUE)
+    set(HAVE_BUSY_POLL FALSE)
 
     target_link_libraries(
         libzmq PUBLIC
@@ -572,6 +576,7 @@ endif()
 
 if(${MSVC})
     set(HAVE_STRNLEN TRUE)
+    set(HAVE_FORK FALSE)
 else()
     check_cxx_symbol_exists(clock_gettime time.h HAVE_CLOCK_GETTIME)
     check_cxx_symbol_exists(fork unistd.h HAVE_FORK)
@@ -621,7 +626,6 @@ if(NOT ${MSVC})
         zmq_check_tcp_keepidle()
         zmq_check_tcp_keepintvl()
         zmq_check_tcp_keepalive()
-        zmq_check_tcp_tipc()
         zmq_check_getrandom()
     endif()
 endif()
@@ -673,4 +677,9 @@ endif()
 if(${ZMQ_SHARED} AND ${WIN32})
     # export symbols
     target_compile_definitions(libzmq PRIVATE DLL_EXPORT)
+endif()
+
+if(${ZMQ_BUILD_TESTS})
+    enable_testing()
+    add_subdirectory(tests)
 endif()
